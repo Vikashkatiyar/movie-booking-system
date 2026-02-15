@@ -1,5 +1,6 @@
 package com.moviebooking.userservice.service;
 
+import com.moviebooking.userservice.exception.UserNotFoundException;
 import com.moviebooking.userservice.model.UserPrincipal;
 import com.moviebooking.userservice.model.Users;
 import com.moviebooking.userservice.repo.UserRepo;
@@ -20,8 +21,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users user = userRepo.findByUsername(username);
         if (user == null) {
-            System.out.println("User Not Found");
-            throw new UsernameNotFoundException("user not found");
+            throw new UserNotFoundException("user not found");
         }
         
         return new UserPrincipal(user);

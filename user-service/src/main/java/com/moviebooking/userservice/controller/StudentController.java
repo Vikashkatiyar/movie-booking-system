@@ -3,6 +3,7 @@ package com.moviebooking.userservice.controller;
 
 import com.moviebooking.userservice.model.Student;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,15 +24,9 @@ public class StudentController {
 
 
     @GetMapping("/students")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Student> getStudents() {
         return students;
-    }
-
-    @GetMapping("/csrf-token")
-    public CsrfToken getCsrfToken(HttpServletRequest request) {
-        return (CsrfToken) request.getAttribute("_csrf");
-
-
     }
 
 

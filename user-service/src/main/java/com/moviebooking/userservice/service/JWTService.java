@@ -1,5 +1,6 @@
 package com.moviebooking.userservice.service;
 
+import com.moviebooking.userservice.model.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -33,18 +34,31 @@ public class JWTService {
         }
     }
 
-    public String generateToken(String username) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        claims.put("roles",
+                userDetails.getAuthorities()
+                        .stream()
+                        .map(auth -> auth.getAuthority())
+                        .toList()
+        );
+
+        // 🔥 Cast to your custom UserPrincipal
+        if (userDetails instanceof UserPrincipal userPrincipal) {
+            claims.put("email", userPrincipal.getEmail());
+        }
+
+
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username)
+                .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
                 .and()
                 .signWith(getKey())
                 .compact();
-
     }
 
     private SecretKey getKey() {
